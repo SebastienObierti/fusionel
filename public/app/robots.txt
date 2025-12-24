@@ -1,0 +1,54 @@
+# Fusionel.fr - Robots.txt
+# Site de rencontre sérieux
+
+User-agent: *
+Allow: /
+Allow: /index.html
+Allow: /login.html
+Allow: /register.html
+Allow: /forgot-password.html
+
+# Bloquer les pages privées
+Disallow: /app/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /uploads/
+Disallow: /lib/
+Disallow: /templates/
+Disallow: /assets/js/
+Disallow: /*.php$
+
+# Bloquer les paramètres de session
+Disallow: /*?session
+Disallow: /*?token
+Disallow: /*?conv=
+Disallow: /*?match=
+
+# Délai entre les requêtes (en secondes)
+Crawl-delay: 1
+
+# Sitemap
+Sitemap: https://fusionel.fr/sitemap.xml
+
+# Google
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Bing
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+# Bloquer les bots indésirables
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /

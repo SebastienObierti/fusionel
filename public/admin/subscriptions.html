@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Abonnements - Fusionel</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff6b6b; --dark: #2d3436; --gray: #636e72; --bg: #f8f9fa; --white: #fff; --success: #00b894; --warning: #fdcb6e; --danger: #d63031; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; }
+        .header { background: var(--white); padding: 20px 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { font-size: 24px; color: var(--primary); }
+        .container { max-width: 1400px; margin: 30px auto; padding: 0 20px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: var(--white); border-radius: 12px; padding: 20px; }
+        .stat-card h3 { font-size: 14px; color: var(--gray); margin-bottom: 10px; }
+        .stat-card .value { font-size: 32px; font-weight: 700; }
+        .stat-card .value.success { color: var(--success); }
+        .stat-card .value.warning { color: var(--warning); }
+        .stat-card .value.primary { color: var(--primary); }
+        
+        .card { background: var(--white); border-radius: 12px; padding: 24px; margin-bottom: 20px; }
+        .card h2 { font-size: 18px; margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+        
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #f0f0f0; }
+        th { font-weight: 600; color: var(--gray); font-size: 12px; text-transform: uppercase; }
+        
+        .badge { padding: 4px 10px; border-radius: 15px; font-size: 12px; font-weight: 600; }
+        .badge-success { background: #d4edda; color: #155724; }
+        .badge-warning { background: #fff3cd; color: #856404; }
+        .badge-danger { background: #f8d7da; color: #721c24; }
+        .badge-info { background: #cce5ff; color: #004085; }
+        .badge-premium { background: #e8daef; color: #8e44ad; }
+        .badge-vip { background: #fadbd8; color: #e74c3c; }
+        
+        .btn { padding: 8px 16px; border-radius: 8px; font-size: 13px; cursor: pointer; border: none; }
+        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-outline { background: transparent; border: 1px solid var(--gray); color: var(--gray); }
+        
+        .filters { display: flex; gap: 15px; margin-bottom: 20px; flex-wrap: wrap; }
+        .filters select, .filters input { padding: 10px 15px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+        
+        .user-info { display: flex; align-items: center; gap: 10px; }
+        .user-info img { width: 35px; height: 35px; border-radius: 50%; object-fit: cover; }
+        
+        .pagination { display: flex; justify-content: center; gap: 5px; margin-top: 20px; }
+        .pagination button { padding: 8px 15px; border: 1px solid #ddd; background: var(--white); cursor: pointer; border-radius: 5px; }
+        .pagination button.active { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .chart-container { height: 300px; margin-top: 20px; }
+        
+        .alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .alert-info { background: #cce5ff; color: #004085; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>💳 Gestion des Abonnements</h1>
+        <div>
+            <button class="btn btn-outline" onclick="exportCSV()">📥 Exporter CSV</button>
+            <button class="btn btn-primary" onclick="sendReminders()">📧 Envoyer rappels</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3>Revenus ce mois</h3>
+                <div class="value success" id="revenueMonth">0 €</div>
+            </div>
+            <div class="stat-card">
+                <h3>Abonnés Premium</h3>
+                <div class="value primary" id="premiumCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Abonnés VIP</h3>
+                <div class="value" style="color:#e74c3c" id="vipCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Expirent dans 7j</h3>
+                <div class="value warning" id="expiringCount">0</div>
+            </div>
+            <div class="stat-card">
+                <h3>Taux de conversion</h3>
+                <div class="value" id="conversionRate">0%</div>
+            </div>
+        </div>
+        
+        <!-- Abonnements expiring soon -->
+        <div class="card" id="expiringSection">
+            <h2>⚠️ Abonnements expirant bientôt</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Utilisateur</th>
+                        <th>Plan</th>
+                        <th>Expire le</th>
+                        <th>Jours restants</th>
+                        <th>Rappel envoyé</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="expiringTable"></tbody>
+            </table>
+        </div>
+        
+        <!-- Tous les abonnements -->
+        <div class="card">
+            <h2>📋 Tous les abonnements</h2>
+            <div class="filters">
+                <select id="filterPlan">
+                    <option value="">Tous les plans</option>
+                    <option value="premium">Premium</option>
+                    <option value="vip">VIP</option>
+                </select>
+                <select id="filterStatus">
+                    <option value="">Tous les statuts</option>
+                    <option value="active">Actif</option>
+                    <option value="cancelled">Annulé</option>
+                    <option value="expired">Expiré</option>
+                </select>
+                <select id="filterPeriod">
+                    <option value="">Toutes les périodes</option>
+                    <option value="monthly">Mensuel</option>
+                    <option value="quarterly">Trimestriel</option>
+                    <option value="yearly">Annuel</option>
+                </select>
+                <input type="text" id="searchUser" placeholder="🔍 Rechercher utilisateur...">
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Utilisateur</th>
+                        <th>Plan</th>
+                        <th>Période</th>
+                        <th>Prix</th>
+                        <th>Statut</th>
+                        <th>Début</th>
+                        <th>Fin</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="subscriptionsTable"></tbody>
+            </table>
+            <div class="pagination" id="pagination"></div>
+        </div>
+        
+        <!-- Historique des paiements -->
+        <div class="card">
+            <h2>💰 Derniers paiements</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Utilisateur</th>
+                        <th>Montant</th>
+                        <th>Plan</th>
+                        <th>Transaction PayPal</th>
+                        <th>Statut</th>
+                    </tr>
+                </thead>
+                <tbody id="paymentsTable"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API = '/api/admin';
+        
+        async function loadStats() {
+            try {
+                const r = await fetch(`${API}/subscription/stats`, { credentials: 'include' });
+                const d = await r.json();
+                
+                document.getElementById('revenueMonth').textContent = d.revenue_month.toFixed(2) + ' €';
+                document.getElementById('premiumCount').textContent = d.premium_count;
+                document.getElementById('vipCount').textContent = d.vip_count;
+                document.getElementById('expiringCount').textContent = d.expiring_count;
+                document.getElementById('conversionRate').textContent = d.conversion_rate.toFixed(1) + '%';
+            } catch(e) { console.error(e); }
+        }
+        
+        async function loadExpiring() {
+            try {
+                const r = await fetch(`${API}/subscription/expiring`, { credentials: 'include' });
+                const d = await r.json();
+                
+                const tbody = document.getElementById('expiringTable');
+                if (!d.subscriptions || d.subscriptions.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#666;">Aucun abonnement expirant prochainement</td></tr>';
+                    return;
+                }
+                
+                tbody.innerHTML = d.subscriptions.map(s => `
+                    <tr>
+                        <td>
+                            <div class="user-info">
+                                <img src="${s.photo || 'https://ui-avatars.com/api/?name=' + s.firstname}" alt="">
+                                <div>
+                                    <strong>${s.firstname} ${s.lastname || ''}</strong><br>
+                                    <small>${s.email}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-${s.plan_type}">${s.plan_type.toUpperCase()}</span></td>
+                        <td>${formatDate(s.ends_at)}</td>
+                        <td><span class="badge ${s.days_remaining <= 1 ? 'badge-danger' : s.days_remaining <= 3 ? 'badge-warning' : 'badge-info'}">${s.days_remaining}j</span></td>
+                        <td>${s.reminder_sent ? '✅' : '❌'}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="sendReminderTo(${s.user_id})">📧 Rappel</button>
+                            <button class="btn btn-sm btn-primary" onclick="extendSubscription(${s.id})">➕ Prolonger</button>
+                        </td>
+                    </tr>
+                `).join('');
+            } catch(e) { console.error(e); }
+        }
+        
+        async function loadSubscriptions(page = 1) {
+            const plan = document.getElementById('filterPlan').value;
+            const status = document.getElementById('filterStatus').value;
+            const period = document.getElementById('filterPeriod').value;
+            const search = document.getElementById('searchUser').value;
+            
+            try {
+                const r = await fetch(`${API}/subscriptions?page=${page}&plan=${plan}&status=${status}&period=${period}&search=${search}`, { credentials: 'include' });
+                const d = await r.json();
+                
+                const tbody = document.getElementById('subscriptionsTable');
+                tbody.innerHTML = d.subscriptions.map(s => `
+                    <tr>
+                        <td>#${s.id}</td>
+                        <td>
+                            <div class="user-info">
+                                <img src="${s.photo || 'https://ui-avatars.com/api/?name=' + s.firstname}" alt="">
+                                <span>${s.firstname}</span>
+                            </div>
+                        </td>
+                        <td><span class="badge badge-${s.plan_type}">${s.plan_type.toUpperCase()}</span></td>
+                        <td>${s.billing_period}</td>
+                        <td>${s.price.toFixed(2)} €</td>
+                        <td><span class="badge badge-${s.status === 'active' ? 'success' : s.status === 'cancelled' ? 'warning' : 'danger'}">${s.status}</span></td>
+                        <td>${formatDate(s.starts_at)}</td>
+                        <td>${formatDate(s.ends_at)}</td>
+                        <td>
+                            <button class="btn btn-sm btn-outline" onclick="viewDetails(${s.id})">👁️</button>
+                            ${s.status === 'active' ? `<button class="btn btn-sm btn-outline" onclick="cancelSub(${s.id})">❌</button>` : ''}
+                        </td>
+                    </tr>
+                `).join('');
+                
+                // Pagination
+                renderPagination(d.total_pages, page);
+            } catch(e) { console.error(e); }
+        }
+        
+        async function loadPayments() {
+            try {
+                const r = await fetch(`${API}/payments?limit=20`, { credentials: 'include' });
+                const d = await r.json();
+                
+                const tbody = document.getElementById('paymentsTable');
+                tbody.innerHTML = d.payments.map(p => `
+                    <tr>
+                        <td>${formatDateTime(p.paid_at)}</td>
+                        <td>${p.firstname} ${p.lastname || ''}</td>
+                        <td><strong>${p.amount.toFixed(2)} €</strong></td>
+                        <td><span class="badge badge-${p.plan_type || 'info'}">${(p.plan_type || 'N/A').toUpperCase()}</span></td>
+                        <td><code>${p.transaction_id || '-'}</code></td>
+                        <td><span class="badge badge-${p.status === 'completed' ? 'success' : 'warning'}">${p.status}</span></td>
+                    </tr>
+                `).join('');
+            } catch(e) { console.error(e); }
+        }
+        
+        function renderPagination(totalPages, currentPage) {
+            const container = document.getElementById('pagination');
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="${i === currentPage ? 'active' : ''}" onclick="loadSubscriptions(${i})">${i}</button>`;
+            }
+            container.innerHTML = html;
+        }
+        
+        async function sendReminders() {
+            if (!confirm('Envoyer les rappels de renouvellement aux abonnés concernés ?')) return;
+            try {
+                const r = await fetch(`${API}/subscription/send-reminders`, { method: 'POST', credentials: 'include' });
+                const d = await r.json();
+                alert(`${d.sent_count} rappel(s) envoyé(s)`);
+                loadExpiring();
+            } catch(e) { alert('Erreur'); }
+        }
+        
+        async function sendReminderTo(userId) {
+            try {
+                await fetch(`${API}/subscription/send-reminder/${userId}`, { method: 'POST', credentials: 'include' });
+                alert('Rappel envoyé');
+                loadExpiring();
+            } catch(e) { alert('Erreur'); }
+        }
+        
+        async function extendSubscription(subId) {
+            const days = prompt('Nombre de jours à ajouter:', '7');
+            if (!days) return;
+            try {
+                await fetch(`${API}/subscription/${subId}/extend`, { 
+                    method: 'POST', 
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ days: parseInt(days) })
+                });
+                alert('Abonnement prolongé');
+                loadExpiring();
+                loadSubscriptions();
+            } catch(e) { alert('Erreur'); }
+        }
+        
+        async function cancelSub(subId) {
+            if (!confirm('Annuler cet abonnement ?')) return;
+            try {
+                await fetch(`${API}/subscription/${subId}/cancel`, { method: 'POST', credentials: 'include' });
+                alert('Abonnement annulé');
+                loadSubscriptions();
+            } catch(e) { alert('Erreur'); }
+        }
+        
+        function exportCSV() {
+            window.location.href = `${API}/subscriptions/export?format=csv`;
+        }
+        
+        function formatDate(d) {
+            if (!d) return '-';
+            return new Date(d).toLocaleDateString('fr-FR');
+        }
+        
+        function formatDateTime(d) {
+            if (!d) return '-';
+            return new Date(d).toLocaleString('fr-FR');
+        }
+        
+        // Event listeners
+        document.getElementById('filterPlan').onchange = () => loadSubscriptions(1);
+        document.getElementById('filterStatus').onchange = () => loadSubscriptions(1);
+        document.getElementById('filterPeriod').onchange = () => loadSubscriptions(1);
+        document.getElementById('searchUser').oninput = debounce(() => loadSubscriptions(1), 500);
+        
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(this, args), wait);
+            };
+        }
+        
+        // Init
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadExpiring();
+            loadSubscriptions();
+            loadPayments();
+        });
+        
+        // Refresh every 5 minutes
+        setInterval(() => {
+            loadStats();
+            loadExpiring();
+        }, 300000);
+    </script>
+</body>
+</html>

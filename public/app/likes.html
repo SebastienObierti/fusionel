@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6F6T8BL6QY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-6F6T8BL6QY');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Likes reçus - Fusionel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff6b6b; --primary-light: #fff5f5; --dark: #2d3436; --gray: #636e72; --light-gray: #b2bec3; --bg: #f8f9fa; --white: #fff; --success: #00b894; --gold: #f1c40f; --sidebar-width: 260px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: var(--dark); }
+        .sidebar { width: var(--sidebar-width); background: var(--white); border-right: 1px solid #eee; height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #eee; }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--primary); font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+        .sidebar-logo svg { width: 28px; height: 28px; fill: var(--primary); }
+        .sidebar-nav { flex: 1; padding: 15px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--gray); text-decoration: none; border-left: 3px solid transparent; font-size: 14px; }
+        .nav-item:hover, .nav-item.active { background: var(--primary-light); color: var(--primary); border-left-color: var(--primary); }
+        .nav-item.active { font-weight: 600; }
+        .nav-item svg { width: 20px; height: 20px; }
+        .nav-badge { margin-left: auto; background: var(--primary); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+        .sidebar-footer { padding: 15px 20px; border-top: 1px solid #eee; }
+        .user-mini { display: flex; align-items: center; gap: 10px; }
+        .user-mini img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .user-mini-info h4 { font-size: 13px; font-weight: 600; }
+        .user-mini-info span { font-size: 11px; color: var(--gray); }
+
+        .main-content { margin-left: var(--sidebar-width); padding: 30px; min-height: 100vh; }
+        .content-wrapper { max-width: 800px; margin: 0 auto; }
+        .page-header { margin-bottom: 25px; }
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 28px; }
+
+        .section-card { background: var(--white); border-radius: 16px; padding: 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 18px; margin-bottom: 20px; }
+
+        .likes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .like-card { background: var(--bg); border-radius: 16px; overflow: hidden; position: relative; }
+        .like-card .photo { width: 100%; aspect-ratio: 0.8; object-fit: cover; }
+        .like-card .super-badge { position: absolute; top: 10px; left: 10px; background: var(--gold); color: var(--dark); padding: 4px 10px; border-radius: 15px; font-size: 11px; font-weight: 600; }
+        .like-card .info { padding: 12px; }
+        .like-card .name { font-weight: 600; font-size: 15px; margin-bottom: 3px; }
+        .like-card .city { font-size: 12px; color: var(--gray); margin-bottom: 10px; }
+        .like-card .actions { display: flex; gap: 8px; }
+        .like-card .btn-sm { flex: 1; padding: 8px; border-radius: 20px; border: none; cursor: pointer; font-size: 12px; font-weight: 600; }
+        .like-card .btn-pass { background: #eee; color: var(--gray); }
+        .like-card .btn-like { background: var(--primary); color: white; }
+
+        .premium-banner { background: linear-gradient(135deg, #9b59b6, #8e44ad); color: white; border-radius: 16px; padding: 25px; margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; }
+        .premium-banner h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 5px; }
+        .premium-banner p { opacity: 0.9; font-size: 14px; }
+        .premium-banner .btn { background: white; color: #9b59b6; padding: 10px 20px; border-radius: 20px; text-decoration: none; font-weight: 600; font-size: 14px; }
+
+        .empty-state { text-align: center; padding: 60px 20px; }
+        .empty-state .icon { font-size: 60px; margin-bottom: 15px; }
+        .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 10px; }
+        .empty-state p { color: var(--gray); font-size: 14px; }
+
+        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid #eee; padding: 8px 0; z-index: 1000; }
+        .mobile-nav-items { display: flex; justify-content: space-around; }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--gray); font-size: 10px; }
+        .mobile-nav-item.active { color: var(--primary); }
+        .mobile-nav-item svg { width: 22px; height: 22px; margin-bottom: 3px; }
+
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px 15px 80px; }
+            .mobile-nav { display: block; }
+            .likes-grid { grid-template-columns: repeat(2, 1fr); }
+            .premium-banner { flex-direction: column; text-align: center; gap: 15px; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="sidebar-logo"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Fusionel</a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="discover.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Découvrir</a>
+            <a href="matches.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Matchs</a>
+            <a href="likes.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Likes <span class="nav-badge" id="likesCount">0</span></a>
+            <a href="messages.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+            <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Mon Profil</a>
+            <a href="subscription.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Premium</a>
+            <a href="settings.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>Paramètres</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-mini"><img src="" id="sidebarPhoto"><div class="user-mini-info"><h4 id="sidebarName">...</h4><span>Mon profil</span></div></div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-header"><h1>👍 Likes reçus</h1></div>
+            
+            <div class="premium-banner" id="premiumBanner">
+                <div>
+                    <h3>💎 Voir qui vous aime</h3>
+                    <p>Passez Premium pour voir tous vos admirateurs</p>
+                </div>
+                <a href="subscription.html" class="btn">Passer Premium</a>
+            </div>
+            
+            <div class="section-card">
+                <h3 class="section-title">Ils vous ont liké</h3>
+                <div class="likes-grid" id="likesGrid">
+                    <div class="empty-state" id="emptyState">
+                        <div class="icon">💝</div>
+                        <h3>Pas encore de likes</h3>
+                        <p>Complétez votre profil pour attirer plus de monde !</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <nav class="mobile-nav">
+        <div class="mobile-nav-items">
+            <a href="discover.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Découvrir</a>
+            <a href="matches.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Matchs</a>
+            <a href="messages.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+            <a href="profile.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+        </div>
+    </nav>
+
+    <script>
+        const API='/api', PHOTO_BASE='/uploads/photos/', DEFAULT_AVATAR='https://ui-avatars.com/api/?background=ff6b6b&color=fff&size=200&name=';
+        let currentUser=null;
+        const getPhoto=(p,n='U')=>!p?DEFAULT_AVATAR+encodeURIComponent(n):p.startsWith('http')||p.startsWith('/')?p:PHOTO_BASE+p;
+
+        async function init(){
+            try{
+                const r=await fetch(`${API}/auth/me`,{credentials:'include'});
+                const d=await r.json();
+                if(!d.user){window.location.href='../login.html';return;}
+                currentUser=d.user;
+                document.getElementById('sidebarName').textContent=currentUser.firstname;
+                document.getElementById('sidebarPhoto').src=getPhoto(currentUser.photo,currentUser.firstname);
+                
+                // Masquer banner premium si déjà premium
+                if(currentUser.subscription_type && currentUser.subscription_type !== 'free'){
+                    document.getElementById('premiumBanner').style.display='none';
+                }
+                
+                await loadLikes();
+            }catch(e){console.error(e);}
+        }
+
+        async function loadLikes(){
+            try{
+                const r=await fetch(`${API}/likes`,{credentials:'include'});
+                const d=await r.json();
+                const likes=d.likes||[];
+                
+                document.getElementById('likesCount').textContent=likes.length;
+                
+                const grid=document.getElementById('likesGrid');
+                if(likes.length===0){
+                    grid.innerHTML=`<div class="empty-state"><div class="icon">💝</div><h3>Pas encore de likes</h3><p>Complétez votre profil pour attirer plus de monde !</p></div>`;
+                    return;
+                }
+                
+                grid.innerHTML=likes.map(l=>`
+                    <div class="like-card" data-id="${l.id}">
+                        <img class="photo" src="${getPhoto(l.photo,l.firstname)}" onerror="this.src='${DEFAULT_AVATAR}${l.firstname}'">
+                        ${l.is_super_like?'<span class="super-badge">⭐ Super Like</span>':''}
+                        <div class="info">
+                            <div class="name">${l.firstname}</div>
+                            <div class="city">📍 ${l.city||'Non renseigné'}</div>
+                            <div class="actions">
+                                <button class="btn-sm btn-pass" onclick="passLike(${l.id})">✕</button>
+                                <button class="btn-sm btn-like" onclick="likeback(${l.id})">❤️ Liker</button>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }catch(e){console.error(e);}
+        }
+
+        async function likeback(userId){
+            try{
+                const r=await fetch(`${API}/likes/send`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({user_id:userId})});
+                const d=await r.json();
+                if(d.is_match){
+                    alert('🎉 C\'est un match !');
+                    window.location.href='matches.html';
+                }else{
+                    document.querySelector(`[data-id="${userId}"]`).remove();
+                }
+            }catch(e){console.error(e);}
+        }
+
+        async function passLike(userId){
+            try{
+                await fetch(`${API}/likes/pass`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({user_id:userId})});
+                document.querySelector(`[data-id="${userId}"]`).remove();
+            }catch(e){console.error(e);}
+        }
+
+        document.addEventListener('DOMContentLoaded',init);
+    </script>
+</body>
+</html>

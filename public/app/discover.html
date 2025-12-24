@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6F6T8BL6QY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-6F6T8BL6QY');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Découvrir - Fusionel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #ff6b6b;
+            --primary-light: #fff5f5;
+            --dark: #2d3436;
+            --gray: #636e72;
+            --light-gray: #b2bec3;
+            --bg: #f8f9fa;
+            --white: #ffffff;
+            --success: #00b894;
+            --danger: #d63031;
+            --sidebar-width: 260px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: var(--dark); }
+
+        .sidebar { width: var(--sidebar-width); background: var(--white); border-right: 1px solid #eee; height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #eee; }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--primary); font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+        .sidebar-logo svg { width: 28px; height: 28px; fill: var(--primary); }
+        .sidebar-nav { flex: 1; padding: 15px 0; overflow-y: auto; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--gray); text-decoration: none; transition: all 0.2s; border-left: 3px solid transparent; font-size: 14px; }
+        .nav-item:hover, .nav-item.active { background: var(--primary-light); color: var(--primary); border-left-color: var(--primary); }
+        .nav-item.active { font-weight: 600; }
+        .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+        .nav-badge { margin-left: auto; background: var(--primary); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+        .sidebar-footer { padding: 15px 20px; border-top: 1px solid #eee; }
+        .user-mini { display: flex; align-items: center; gap: 10px; }
+        .user-mini img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .user-mini-info h4 { font-size: 13px; font-weight: 600; }
+        .user-mini-info span { font-size: 11px; color: var(--gray); }
+
+        .main-content { margin-left: var(--sidebar-width); padding: 30px; min-height: 100vh; }
+        .content-wrapper { max-width: 500px; margin: 0 auto; }
+        .page-header { margin-bottom: 25px; }
+        .page-header h1 { font-family: 'Playfair Display', serif; font-size: 28px; }
+
+        .section-card { background: var(--white); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .section-title { font-family: 'Playfair Display', serif; font-size: 16px; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between; cursor: pointer; }
+        .section-title:hover { color: var(--primary); }
+
+        .filters-content { display: none; padding-top: 15px; margin-top: 15px; border-top: 1px solid #eee; }
+        .filters-content.active { display: block; }
+        .filter-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 12px; }
+        .filter-group label { display: block; font-size: 12px; color: var(--gray); margin-bottom: 5px; font-weight: 500; }
+        .filter-group input, .filter-group select { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 8px; font-size: 13px; }
+        .filter-group input:focus, .filter-group select:focus { outline: none; border-color: var(--primary); }
+
+        .distance-container { background: var(--primary-light); padding: 15px; border-radius: 12px; margin-bottom: 15px; }
+        .distance-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .distance-header span { font-weight: 600; font-size: 14px; }
+        .distance-value { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        input[type="range"] { width: 100%; height: 6px; -webkit-appearance: none; background: #ddd; border-radius: 3px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 20px; height: 20px; background: var(--primary); border-radius: 50%; cursor: pointer; }
+        .distance-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--light-gray); margin-top: 5px; }
+
+        .location-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 15px; }
+        .location-btn { display: flex; align-items: center; gap: 6px; padding: 10px 16px; background: var(--primary-light); border: none; border-radius: 10px; color: var(--primary); cursor: pointer; font-size: 13px; font-weight: 600; transition: all 0.2s; }
+        .location-btn:hover { background: var(--primary); color: white; }
+        .location-btn.success { background: var(--success); color: white; }
+        .location-info { padding: 8px 14px; background: #d4edda; border-radius: 10px; font-size: 12px; color: #155724; }
+        .location-info.warning { background: #fff3cd; color: #856404; }
+
+        .checkbox-row { display: flex; gap: 20px; flex-wrap: wrap; }
+        .checkbox-label { display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer; }
+        .checkbox-label input { width: 16px; height: 16px; accent-color: var(--primary); }
+
+        .filter-stats { display: flex; align-items: center; justify-content: space-between; padding: 12px 15px; background: var(--bg); border-radius: 10px; margin-top: 15px; }
+        .filter-stats .count { font-weight: 700; color: var(--primary); font-size: 16px; }
+        .btn-reset { padding: 8px 16px; background: transparent; border: 1px solid var(--light-gray); border-radius: 20px; color: var(--gray); cursor: pointer; font-size: 12px; }
+        .btn-reset:hover { border-color: var(--primary); color: var(--primary); }
+
+        .swipe-card { background: var(--white); border-radius: 20px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+        .swipe-card-image { height: 450px; position: relative; background: var(--bg); display: flex; align-items: center; justify-content: center; }
+        .swipe-card-image img { width: 100%; height: 100%; object-fit: cover; }
+        .swipe-card-image .placeholder { font-size: 120px; }
+        .distance-badge { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.7); color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .swipe-card-overlay { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 30px 20px 20px; color: white; }
+        .swipe-card-name { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; margin-bottom: 5px; }
+        .swipe-card-location { font-size: 14px; opacity: 0.9; margin-bottom: 8px; }
+        .swipe-card-bio { font-size: 14px; opacity: 0.8; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .swipe-card-info { padding: 15px 20px; }
+        .tags { display: flex; flex-wrap: wrap; gap: 8px; }
+        .tag { padding: 6px 12px; background: var(--primary-light); color: var(--primary); border-radius: 20px; font-size: 12px; font-weight: 500; }
+        .tag.online { background: var(--success); color: white; }
+        .tag.verified { background: #007bff; color: white; }
+
+        .swipe-actions { display: flex; justify-content: center; gap: 20px; margin-top: 25px; }
+        .swipe-btn { width: 60px; height: 60px; border-radius: 50%; border: none; cursor: pointer; font-size: 24px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
+        .swipe-btn:hover { transform: scale(1.1); }
+        .swipe-btn.pass { background: var(--white); color: var(--danger); box-shadow: 0 4px 15px rgba(214,48,49,0.2); }
+        .swipe-btn.superlike { background: var(--white); color: #f39c12; box-shadow: 0 4px 15px rgba(243,156,18,0.2); }
+        .swipe-btn.like { background: linear-gradient(135deg, var(--primary), #ff8e8e); color: white; box-shadow: 0 4px 15px rgba(255,107,107,0.4); }
+        .likes-info { text-align: center; margin-top: 15px; font-size: 13px; color: var(--gray); }
+
+        .loading, .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px 20px; text-align: center; }
+        .spinner { width: 50px; height: 50px; border: 4px solid var(--primary-light); border-top-color: var(--primary); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .empty-icon { font-size: 80px; margin-bottom: 20px; }
+        .empty-state h3 { font-family: 'Playfair Display', serif; font-size: 22px; margin-bottom: 10px; }
+        .empty-state p { color: var(--gray); margin-bottom: 20px; }
+        .btn { padding: 12px 28px; border-radius: 25px; font-size: 14px; font-weight: 600; cursor: pointer; border: none; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), #ff8e8e); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255,107,107,0.4); }
+        .btn-secondary { background: var(--bg); color: var(--dark); }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: var(--white); border-radius: 24px; padding: 40px; text-align: center; max-width: 400px; margin: 20px; animation: modalIn 0.3s ease; }
+        @keyframes modalIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-icon { font-size: 80px; margin-bottom: 20px; }
+        .modal h2 { font-family: 'Playfair Display', serif; font-size: 28px; color: var(--primary); margin-bottom: 10px; }
+        .modal p { color: var(--gray); margin-bottom: 25px; }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+
+        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid #eee; padding: 8px 0; z-index: 1000; }
+        .mobile-nav-items { display: flex; justify-content: space-around; }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--gray); font-size: 10px; }
+        .mobile-nav-item.active { color: var(--primary); }
+        .mobile-nav-item svg { width: 22px; height: 22px; margin-bottom: 3px; }
+
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; padding: 20px 15px 100px 15px; }
+            .mobile-nav { display: block; }
+            .filter-row { grid-template-columns: 1fr; }
+            .swipe-card-image { height: 400px; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="sidebar-logo">
+                <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                Fusionel
+            </a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="discover.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>Découvrir</a>
+            <a href="matches.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Matchs <span class="nav-badge" id="matchCount">0</span></a>
+            <a href="likes.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Likes <span class="nav-badge" id="likesCount">0</span></a>
+            <a href="messages.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages <span class="nav-badge" id="msgCount">0</span></a>
+            <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Mon Profil</a>
+            <a href="subscription.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Premium</a>
+            <a href="settings.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Paramètres</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-mini">
+                <img src="" alt="" id="sidebarPhoto">
+                <div class="user-mini-info"><h4 id="sidebarName">...</h4><span>Mon profil</span></div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="content-wrapper">
+            <div class="page-header"><h1>Découvrir</h1></div>
+
+            <div class="section-card">
+                <div class="section-title" onclick="toggleFilters()">
+                    <span>🎯 Filtres de recherche</span>
+                    <span id="filters-arrow">▼</span>
+                </div>
+                <div class="filters-content" id="filters-content">
+                    <div class="distance-container">
+                        <div class="distance-header">
+                            <span>📍 Distance maximale</span>
+                            <span class="distance-value" id="distance-value">50 km</span>
+                        </div>
+                        <input type="range" id="distance-slider" min="5" max="200" value="50" step="5" oninput="updateDistanceSlider(this.value)">
+                        <div class="distance-labels"><span>5 km</span><span>200 km</span></div>
+                    </div>
+                    <div class="location-row">
+                        <button class="location-btn" id="location-btn" onclick="updateMyLocation()">📍 Me localiser</button>
+                        <div class="location-info" id="location-info" style="display:none;"><span id="location-text"></span></div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-group"><label>Je recherche</label><select id="filter-gender" onchange="applyFilters()"><option value="">Tous</option><option value="femme">Femmes</option><option value="homme">Hommes</option></select></div>
+                        <div class="filter-group"><label>Âge min</label><input type="number" id="filter-min-age" value="18" min="18" max="99" onchange="applyFilters()"></div>
+                        <div class="filter-group"><label>Âge max</label><input type="number" id="filter-max-age" value="99" min="18" max="99" onchange="applyFilters()"></div>
+                    </div>
+                    <div class="checkbox-row">
+                        <label class="checkbox-label"><input type="checkbox" id="filter-photo" checked onchange="applyFilters()">Avec photo</label>
+                        <label class="checkbox-label"><input type="checkbox" id="filter-online" onchange="applyFilters()">En ligne</label>
+                    </div>
+                    <div class="filter-stats"><span><span class="count" id="profiles-count">0</span> profils</span><button class="btn-reset" onclick="resetFilters()">Réinitialiser</button></div>
+                </div>
+            </div>
+
+            <div id="loading-state" class="section-card loading"><div class="spinner"></div></div>
+            <div id="empty-state" class="section-card empty-state" style="display:none;"><div class="empty-icon">🔍</div><h3>Aucun profil trouvé</h3><p id="empty-message">Modifiez vos filtres</p><button class="btn btn-primary" onclick="loadProfiles()">Actualiser</button></div>
+
+            <div id="swipe-container" style="display:none;">
+                <div class="swipe-card" id="current-card">
+                    <div class="swipe-card-image" id="card-image"></div>
+                    <div class="swipe-card-info"><div class="tags" id="card-interests"></div></div>
+                </div>
+                <div class="swipe-actions">
+                    <button class="swipe-btn pass" onclick="passProfile()">✕</button>
+                    <button class="swipe-btn superlike" onclick="superLikeProfile()">⭐</button>
+                    <button class="swipe-btn like" onclick="likeProfile()">♥</button>
+                </div>
+                <div class="likes-info" id="likes-remaining">5 likes restants</div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="match-modal">
+        <div class="modal">
+            <div class="modal-icon">💕</div>
+            <h2>C'est un Match !</h2>
+            <p>Vous et <span id="match-name">cette personne</span> vous êtes mutuellement likés !</p>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" onclick="closeMatchModal()">Continuer</button>
+                <button class="btn btn-primary" onclick="goToMessages()">Envoyer un message</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="mobile-nav">
+        <div class="mobile-nav-items">
+            <a href="discover.html" class="mobile-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Découvrir</a>
+            <a href="matches.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Matchs</a>
+            <a href="messages.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+            <a href="profile.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+        </div>
+    </nav>
+
+    <script>
+        const API='/api',PHOTO_BASE='/uploads/photos/',DEFAULT_AVATAR='https://ui-avatars.com/api/?background=ff6b6b&color=fff&size=200&name=';
+        let profiles=[],currentIndex=0,currentUser=null,myLocation=null,useGeolocation=false;
+        let filters={radius:50,gender:'',min_age:18,max_age:99,with_photo:true,online_only:false};
+        const getPhoto=(p,n='U')=>!p?DEFAULT_AVATAR+encodeURIComponent(n):p.startsWith('http')||p.startsWith('/')?p:PHOTO_BASE+p;
+
+        async function init(){try{const r=await fetch(`${API}/auth/me`,{credentials:'include'});const d=await r.json();if(!d.user){window.location.href='../login.html';return;}currentUser=d.user;document.getElementById('sidebarName').textContent=currentUser.firstname;document.getElementById('sidebarPhoto').src=getPhoto(currentUser.photo,currentUser.firstname);if(currentUser.seeking&&currentUser.seeking!=='tous'){document.getElementById('filter-gender').value=currentUser.seeking;filters.gender=currentUser.seeking;}checkMyLocation();loadCounts();}catch(e){window.location.href='../login.html';}}
+
+        async function checkMyLocation(){try{const r=await fetch(`${API}/geolocation.php?action=me`,{credentials:'include'});const d=await r.json();if(d.success&&d.location&&d.location.latitude){myLocation=d.location;useGeolocation=true;document.getElementById('location-info').style.display='block';document.getElementById('location-text').textContent='✓ '+(myLocation.city||'Localisé');}else{document.getElementById('location-info').style.display='block';document.getElementById('location-info').className='location-info warning';document.getElementById('location-text').textContent='⚠️ Cliquez sur Me localiser';}loadProfiles();}catch(e){loadProfiles();}}
+
+        async function updateMyLocation(){const btn=document.getElementById('location-btn');btn.disabled=true;btn.innerHTML='⏳ Localisation...';if(navigator.geolocation){navigator.geolocation.getCurrentPosition(async(pos)=>{try{const r=await fetch(`${API}/geolocation.php?action=update`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({latitude:pos.coords.latitude,longitude:pos.coords.longitude})});const d=await r.json();if(d.success){btn.innerHTML='✓ Localisé';btn.className='location-btn success';myLocation={latitude:d.latitude,longitude:d.longitude};useGeolocation=true;document.getElementById('location-info').style.display='block';document.getElementById('location-info').className='location-info';document.getElementById('location-text').textContent='✓ Localisé';loadProfiles();}}catch(e){}setTimeout(()=>{btn.disabled=false;btn.innerHTML='📍 Me localiser';btn.className='location-btn';},2000);},async()=>{if(currentUser&&currentUser.city){try{const r=await fetch(`${API}/geolocation.php?action=update`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({city:currentUser.city})});const d=await r.json();if(d.success){btn.innerHTML='✓ Via ville';btn.className='location-btn success';myLocation=d;useGeolocation=true;document.getElementById('location-info').style.display='block';document.getElementById('location-info').className='location-info';document.getElementById('location-text').textContent='✓ '+d.city;loadProfiles();}}catch(e){}}setTimeout(()=>{btn.disabled=false;btn.innerHTML='📍 Me localiser';btn.className='location-btn';},2000);},{enableHighAccuracy:true,timeout:10000});}}
+
+        function updateDistanceSlider(v){filters.radius=parseInt(v);document.getElementById('distance-value').textContent=v+' km';}
+        function applyFilters(){filters.gender=document.getElementById('filter-gender').value;filters.min_age=parseInt(document.getElementById('filter-min-age').value)||18;filters.max_age=parseInt(document.getElementById('filter-max-age').value)||99;filters.with_photo=document.getElementById('filter-photo').checked;filters.online_only=document.getElementById('filter-online').checked;loadProfiles();}
+        function resetFilters(){document.getElementById('distance-slider').value=50;updateDistanceSlider(50);document.getElementById('filter-gender').value=currentUser?.seeking||'';document.getElementById('filter-min-age').value=18;document.getElementById('filter-max-age').value=99;document.getElementById('filter-photo').checked=true;document.getElementById('filter-online').checked=false;filters={radius:50,gender:currentUser?.seeking||'',min_age:18,max_age:99,with_photo:true,online_only:false};loadProfiles();}
+        function toggleFilters(){const c=document.getElementById('filters-content');const a=document.getElementById('filters-arrow');c.classList.toggle('active');a.textContent=c.classList.contains('active')?'▲':'▼';}
+
+        async function loadProfiles(){document.getElementById('loading-state').style.display='flex';document.getElementById('swipe-container').style.display='none';document.getElementById('empty-state').style.display='none';try{let data;if(useGeolocation&&myLocation){const params=new URLSearchParams({action:'nearby',radius:filters.radius,min_age:filters.min_age,max_age:filters.max_age,with_photo:filters.with_photo?1:0,online_only:filters.online_only?1:0});if(filters.gender)params.append('gender',filters.gender);const r=await fetch(`${API}/geolocation.php?${params}`,{credentials:'include'});data=await r.json();profiles=data.users||[];}else{const r=await fetch(`${API}/discover`,{credentials:'include'});data=await r.json();profiles=data.profiles||[];}document.getElementById('profiles-count').textContent=profiles.length;currentIndex=0;document.getElementById('loading-state').style.display='none';if(profiles.length>0){document.getElementById('swipe-container').style.display='block';showCurrentProfile();}else{document.getElementById('empty-state').style.display='flex';document.getElementById('empty-message').textContent=useGeolocation?'Augmentez la distance':'Activez la géolocalisation';}loadLikeLimits();}catch(e){document.getElementById('loading-state').style.display='none';document.getElementById('empty-state').style.display='flex';}}
+
+        function showCurrentProfile(){if(currentIndex>=profiles.length){document.getElementById('swipe-container').style.display='none';document.getElementById('empty-state').style.display='flex';return;}const p=profiles[currentIndex];const imageDiv=document.getElementById('card-image');const photoUrl=p.main_photo||p.photo;let html='';if(photoUrl){const imgPath=photoUrl.startsWith('/')?'..'+photoUrl:PHOTO_BASE+photoUrl;html=`<img src="${imgPath}" alt="${p.firstname}" onerror="this.outerHTML='<div class=\\'placeholder\\'>${p.gender==='femme'?'👩':'👨'}</div>'">`;}else{html=`<div class="placeholder">${p.gender==='femme'?'👩':'👨'}</div>`;}if(p.distance!==undefined){html+=`<div class="distance-badge">📍 ${p.distance<1?'< 1':Math.round(p.distance)} km</div>`;}html+=`<div class="swipe-card-overlay"><div class="swipe-card-name">${p.firstname}, ${p.age}</div><div class="swipe-card-location">📍 ${p.city||'?'}${p.distance?' • '+Math.round(p.distance)+' km':''}</div><div class="swipe-card-bio">${p.bio||'Aucune description'}</div></div>`;imageDiv.innerHTML=html;const tagsDiv=document.getElementById('card-interests');tagsDiv.innerHTML='';if(p.is_online)tagsDiv.innerHTML+='<span class="tag online">🟢 En ligne</span>';if(p.is_verified)tagsDiv.innerHTML+='<span class="tag verified">✓ Vérifié</span>';if(p.interests)p.interests.forEach(i=>tagsDiv.innerHTML+=`<span class="tag">${i.icon||''} ${i.name}</span>`);}
+
+        async function loadLikeLimits(){try{const r=await fetch(`${API}/likes/limits`,{credentials:'include'});const d=await r.json();if(d.limits){const rem=d.limits.remaining;document.getElementById('likes-remaining').textContent=rem>100?'Likes illimités':rem+' likes restants';}}catch(e){}}
+        async function loadCounts(){try{const[m,l,n]=await Promise.all([fetch(`${API}/matches`,{credentials:'include'}).then(r=>r.json()),fetch(`${API}/likes`,{credentials:'include'}).then(r=>r.json()),fetch(`${API}/notifications/unread`,{credentials:'include'}).then(r=>r.json())]);document.getElementById('matchCount').textContent=(m.matches||[]).length;document.getElementById('likesCount').textContent=(l.likes||[]).length;document.getElementById('msgCount').textContent=n.unread_count||0;}catch(e){}}
+
+        async function likeProfile(){if(currentIndex>=profiles.length)return;const p=profiles[currentIndex];try{const r=await fetch(`${API}/likes/send`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({user_id:p.id})});const d=await r.json();if(d.success){if(d.is_match){document.getElementById('match-name').textContent=p.firstname;document.getElementById('match-modal').classList.add('active');}nextProfile();loadLikeLimits();}else{alert(d.error||'Erreur');}}catch(e){}}
+        async function superLikeProfile(){if(currentIndex>=profiles.length)return;const p=profiles[currentIndex];try{const r=await fetch(`${API}/likes/send`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({user_id:p.id,super_like:true})});const d=await r.json();if(d.success){if(d.is_match){document.getElementById('match-name').textContent=p.firstname;document.getElementById('match-modal').classList.add('active');}nextProfile();}else{alert(d.error||'Erreur');}}catch(e){}}
+        async function passProfile(){if(currentIndex>=profiles.length)return;try{await fetch(`${API}/likes/pass`,{method:'POST',headers:{'Content-Type':'application/json'},credentials:'include',body:JSON.stringify({user_id:profiles[currentIndex].id})});}catch(e){}nextProfile();}
+        function nextProfile(){currentIndex++;showCurrentProfile();}
+        function closeMatchModal(){document.getElementById('match-modal').classList.remove('active');loadCounts();}
+        function goToMessages(){window.location.href='messages.html';}
+
+        let startX=0,currentX=0;
+        document.addEventListener('DOMContentLoaded',()=>{const card=document.getElementById('current-card');card.addEventListener('touchstart',e=>startX=e.touches[0].clientX);card.addEventListener('touchmove',e=>{currentX=e.touches[0].clientX;card.style.transform=`translateX(${currentX-startX}px) rotate(${(currentX-startX)*0.03}deg)`;});card.addEventListener('touchend',()=>{const diff=currentX-startX;card.style.transform='';if(diff>100)likeProfile();else if(diff<-100)passProfile();startX=0;currentX=0;});});
+        document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')passProfile();if(e.key==='ArrowRight')likeProfile();if(e.key==='ArrowUp')superLikeProfile();});
+        document.getElementById('distance-slider').addEventListener('change',applyFilters);
+        updateDistanceSlider(50);
+        init();
+    </script>
+</body>
+</html>

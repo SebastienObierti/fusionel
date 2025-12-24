@@ -1,0 +1,60 @@
+<?php
+/**
+ * FUSIONEL - Test d'envoi d'email
+ * 
+ * Usage: https://fusionel.fr/api/test_email.php?to=votre@email.com
+ */
+
+error_reporting(E_ALL);
+ini_set('display_errors', 0);
+
+ob_start();
+require_once __DIR__ . '/../lib/Mailer.php';
+ob_end_clean();
+
+header('Content-Type: application/json; charset=utf-8');
+
+$response = ['success' => false, 'message' => ''];
+
+try {
+    $mailer = new Mailer();
+    $to = $_GET['to'] ?? null;
+    
+    if (!$to) {
+        $response['message'] = 'Paramètre "to" requis. Usage: ?to=email@example.com';
+        $response['smtp_ok'] = true;
+        echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    
+    if (!filter_var($to, FILTER_VALIDATE_EMAIL)) {
+        $response['message'] = 'Email invalide';
+        echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        exit;
+    }
+    
+    $result = $mailer->send(
+        $to,
+        '✅ Test Email Fusionel - ' . date('H:i:s'),
+        '<div style="font-family:Arial,sans-serif;max-width:500px;margin:0 auto;padding:20px;">
+            <h1 style="color:#ff6b6b;text-align:center;">💕 Fusionel</h1>
+            <div style="background:#d4edda;border-radius:10px;padding:20px;text-align:center;">
+                <h2 style="color:#155724;">✅ Test réussi !</h2>
+                <p>Email envoyé le <strong>' . date('d/m/Y à H:i:s') . '</strong></p>
+                <p>Votre configuration SMTP fonctionne !</p>
+            </div>
+        </div>'
+    );
+    
+    if ($result) {
+        $response['success'] = true;
+        $response['message'] = "Email envoyé à $to";
+    } else {
+        $response['message'] = 'Échec: ' . $mailer->getLastError();
+    }
+    
+} catch (Exception $e) {
+    $response['message'] = 'Erreur: ' . $e->getMessage();
+}
+
+echo json_encode($response, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);

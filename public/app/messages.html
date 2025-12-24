@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-6F6T8BL6QY"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-6F6T8BL6QY');
+</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Fusionel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #ff6b6b; --primary-light: #fff5f5; --dark: #2d3436; --gray: #636e72; --light-gray: #b2bec3; --bg: #f8f9fa; --white: #fff; --success: #00b894; --sidebar-width: 260px; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: var(--bg); min-height: 100vh; color: var(--dark); }
+        .sidebar { width: var(--sidebar-width); background: var(--white); border-right: 1px solid #eee; height: 100vh; position: fixed; left: 0; top: 0; display: flex; flex-direction: column; z-index: 100; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #eee; }
+        .sidebar-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--primary); font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+        .sidebar-logo svg { width: 28px; height: 28px; fill: var(--primary); }
+        .sidebar-nav { flex: 1; padding: 15px 0; }
+        .nav-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; color: var(--gray); text-decoration: none; border-left: 3px solid transparent; font-size: 14px; }
+        .nav-item:hover, .nav-item.active { background: var(--primary-light); color: var(--primary); border-left-color: var(--primary); }
+        .nav-item.active { font-weight: 600; }
+        .nav-item svg { width: 20px; height: 20px; }
+        .nav-badge { margin-left: auto; background: var(--primary); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+        .sidebar-footer { padding: 15px 20px; border-top: 1px solid #eee; }
+        .user-mini { display: flex; align-items: center; gap: 10px; }
+        .user-mini img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .user-mini-info h4 { font-size: 13px; font-weight: 600; }
+        .user-mini-info span { font-size: 11px; color: var(--gray); }
+
+        .main-content { margin-left: var(--sidebar-width); height: 100vh; display: flex; }
+        
+        /* Conversations List */
+        .conversations-panel { width: 320px; background: var(--white); border-right: 1px solid #eee; display: flex; flex-direction: column; }
+        .panel-header { padding: 20px; border-bottom: 1px solid #eee; }
+        .panel-header h2 { font-family: 'Playfair Display', serif; font-size: 22px; }
+        .conversations-list { flex: 1; overflow-y: auto; }
+        .conv-item { display: flex; align-items: center; gap: 12px; padding: 15px 20px; cursor: pointer; border-bottom: 1px solid #f5f5f5; transition: background 0.2s; }
+        .conv-item:hover, .conv-item.active { background: var(--primary-light); }
+        .conv-item img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
+        .conv-item .info { flex: 1; min-width: 0; }
+        .conv-item .name { font-weight: 600; font-size: 14px; margin-bottom: 3px; }
+        .conv-item .last-msg { font-size: 13px; color: var(--gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .conv-item .meta { text-align: right; }
+        .conv-item .time { font-size: 11px; color: var(--gray); }
+        .conv-item .unread-badge { background: var(--primary); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; margin-top: 5px; display: inline-block; }
+        .conv-item .online-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--success); position: absolute; bottom: 2px; right: 2px; border: 2px solid var(--white); }
+        .conv-item .avatar-wrap { position: relative; }
+
+        /* Chat Panel */
+        .chat-panel { flex: 1; display: flex; flex-direction: column; background: var(--bg); }
+        .chat-header { padding: 15px 20px; background: var(--white); border-bottom: 1px solid #eee; display: flex; align-items: center; gap: 12px; }
+        .chat-header img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; }
+        .chat-header .info h3 { font-size: 16px; margin-bottom: 2px; }
+        .chat-header .info span { font-size: 12px; color: var(--gray); }
+        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .message { max-width: 70%; padding: 12px 16px; border-radius: 18px; font-size: 14px; line-height: 1.4; }
+        .message.sent { background: var(--primary); color: white; align-self: flex-end; border-bottom-right-radius: 5px; }
+        .message.received { background: var(--white); align-self: flex-start; border-bottom-left-radius: 5px; }
+        .message .time { font-size: 10px; opacity: 0.7; margin-top: 5px; }
+        .chat-input { padding: 15px 20px; background: var(--white); border-top: 1px solid #eee; display: flex; gap: 10px; }
+        .chat-input input { flex: 1; padding: 12px 18px; border: 1px solid #eee; border-radius: 25px; font-size: 14px; font-family: inherit; }
+        .chat-input input:focus { outline: none; border-color: var(--primary); }
+        .chat-input button { width: 45px; height: 45px; border-radius: 50%; border: none; background: var(--primary); color: white; cursor: pointer; font-size: 18px; }
+
+        /* Empty States */
+        .empty-chat { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gray); }
+        .empty-chat .icon { font-size: 60px; margin-bottom: 15px; }
+        .empty-chat h3 { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--dark); margin-bottom: 5px; }
+
+        .mobile-nav { display: none; position: fixed; bottom: 0; left: 0; right: 0; background: var(--white); border-top: 1px solid #eee; padding: 8px 0; z-index: 1000; }
+        .mobile-nav-items { display: flex; justify-content: space-around; }
+        .mobile-nav-item { display: flex; flex-direction: column; align-items: center; text-decoration: none; color: var(--gray); font-size: 10px; }
+        .mobile-nav-item.active { color: var(--primary); }
+        .mobile-nav-item svg { width: 22px; height: 22px; margin-bottom: 3px; }
+
+        .back-btn { display: none; width: 35px; height: 35px; border-radius: 50%; border: 1px solid #eee; background: var(--white); cursor: pointer; font-size: 16px; }
+
+        @media (max-width: 900px) {
+            .sidebar { display: none; }
+            .main-content { margin-left: 0; }
+            .conversations-panel { width: 100%; }
+            .chat-panel { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 200; display: none; }
+            .chat-panel.active { display: flex; }
+            .mobile-nav { display: block; }
+            .back-btn { display: flex; align-items: center; justify-content: center; }
+            .chat-messages { padding-bottom: 80px; }
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <a href="../index.html" class="sidebar-logo"><svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>Fusionel</a>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="discover.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Découvrir</a>
+            <a href="matches.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Matchs</a>
+            <a href="likes.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg>Likes</a>
+            <a href="messages.html" class="nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages <span class="nav-badge" id="msgCount">0</span></a>
+            <a href="profile.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Mon Profil</a>
+            <a href="subscription.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Premium</a>
+            <a href="settings.html" class="nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg>Paramètres</a>
+        </nav>
+        <div class="sidebar-footer">
+            <div class="user-mini"><img src="" id="sidebarPhoto"><div class="user-mini-info"><h4 id="sidebarName">...</h4><span>Mon profil</span></div></div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="conversations-panel">
+            <div class="panel-header"><h2>💬 Messages</h2></div>
+            <div class="conversations-list" id="convList"></div>
+        </div>
+        
+        <div class="chat-panel" id="chatPanel">
+            <div class="chat-header">
+                <button class="back-btn" onclick="closeChat()">←</button>
+                <img src="" id="chatPhoto">
+                <div class="info">
+                    <h3 id="chatName">...</h3>
+                    <span id="chatStatus">Hors ligne</span>
+                </div>
+            </div>
+            <div class="chat-messages" id="chatMessages">
+                <div class="empty-chat">
+                    <div class="icon">💬</div>
+                    <h3>Sélectionnez une conversation</h3>
+                    <p>Choisissez un match pour commencer à discuter</p>
+                </div>
+            </div>
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Écrivez un message..." onkeypress="if(event.key==='Enter')sendMessage()">
+                <button onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </main>
+
+    <nav class="mobile-nav">
+        <div class="mobile-nav-items">
+            <a href="discover.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Découvrir</a>
+            <a href="matches.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>Matchs</a>
+            <a href="messages.html" class="mobile-nav-item active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Messages</a>
+            <a href="profile.html" class="mobile-nav-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/></svg>Profil</a>
+        </div>
+    </nav>
+
+    <script>
+        const API='/api', PHOTO_BASE='/uploads/photos/', DEFAULT_AVATAR='https://ui-avatars.com/api/?background=ff6b6b&color=fff&size=200&name=';
+        let currentUser=null, currentConvId=null, conversations=[];
+        const getPhoto=(p,n='U')=>!p?DEFAULT_AVATAR+encodeURIComponent(n):p.startsWith('http')||p.startsWith('/')?p:PHOTO_BASE+p;
+
+        async function init(){
+            try{
+                const r=await fetch(`${API}/auth/me`,{credentials:'include'});
+                const d=await r.json();
+                if(!d.user){window.location.href='../login.html';return;}
+                currentUser=d.user;
+                document.getElementById('sidebarName').textContent=currentUser.firstname;
+                document.getElementById('sidebarPhoto').src=getPhoto(currentUser.photo,currentUser.firstname);
+                await loadConversations();
+                
+                // Check URL param
+                const params=new URLSearchParams(window.location.search);
+                if(params.get('conv')) openConversation(parseInt(params.get('conv')));
+            }catch(e){console.error(e);}
+        }
+
+        async function loadConversations(){
+            try{
+                const r=await fetch(`${API}/conversations`,{credentials:'include'});
+                const d=await r.json();
+                conversations=d.conversations||[];
+                
+                let unread=0;
+                conversations.forEach(c=>{unread+=c.unread_count||0;});
+                document.getElementById('msgCount').textContent=unread;
+                
+                const list=document.getElementById('convList');
+                if(conversations.length===0){
+                    list.innerHTML='<div class="empty-chat" style="padding:40px"><div class="icon">💬</div><h3>Pas de messages</h3><p>Matchez avec quelqu\'un pour discuter !</p></div>';
+                    return;
+                }
+                
+                list.innerHTML=conversations.map(c=>`
+                    <div class="conv-item ${currentConvId===c.id?'active':''}" onclick="openConversation(${c.id})">
+                        <div class="avatar-wrap">
+                            <img src="${getPhoto(c.other_photo,c.firstname)}" onerror="this.src='${DEFAULT_AVATAR}${c.firstname}'">
+                            ${c.is_online?'<span class="online-dot"></span>':''}
+                        </div>
+                        <div class="info">
+                            <div class="name">${c.firstname}</div>
+                            <div class="last-msg">${c.last_message||'Commencez la conversation...'}</div>
+                        </div>
+                        <div class="meta">
+                            <div class="time">${formatTime(c.last_message_at)}</div>
+                            ${c.unread_count>0?`<span class="unread-badge">${c.unread_count}</span>`:''}
+                        </div>
+                    </div>
+                `).join('');
+            }catch(e){console.error(e);}
+        }
+
+        async function openConversation(convId){
+            currentConvId=convId;
+            document.getElementById('chatPanel').classList.add('active');
+            
+            // Highlight active
+            document.querySelectorAll('.conv-item').forEach(el=>el.classList.remove('active'));
+            document.querySelector(`.conv-item[onclick="openConversation(${convId})"]`)?.classList.add('active');
+            
+            try{
+                const r=await fetch(`${API}/conversations/${convId}`,{credentials:'include'});
+                const d=await r.json();
+                
+                document.getElementById('chatName').textContent=d.conversation.firstname;
+                document.getElementById('chatPhoto').src=getPhoto(d.conversation.other_photo,d.conversation.firstname);
+                document.getElementById('chatStatus').textContent=d.conversation.is_online?'En ligne':'Hors ligne';
+                
+                const msgs=d.messages||[];
+                const container=document.getElementById('chatMessages');
+                
+                if(msgs.length===0){
+                    container.innerHTML=`<div class="empty-chat"><div class="icon">👋</div><h3>Dites bonjour !</h3><p>Envoyez le premier message</p></div>`;
+                }else{
+                    container.innerHTML=msgs.map(m=>`
+                        <div class="message ${m.sender_id==currentUser.id?'sent':'received'}">
+                            ${m.content}
+                            <div class="time">${formatTime(m.created_at)}</div>
+                        </div>
+                    `).join('');
+                    container.scrollTop=container.scrollHeight;
+                }
+                
+                // Refresh list to update unread count
+                loadConversations();
+            }catch(e){console.error(e);}
+        }
+
+        async function sendMessage(){
+            const input=document.getElementById('messageInput');
+            const content=input.value.trim();
+            if(!content||!currentConvId)return;
+            
+            input.value='';
+            
+            try{
+                await fetch(`${API}/conversations/${currentConvId}`,{
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    credentials:'include',
+                    body:JSON.stringify({content})
+                });
+                openConversation(currentConvId);
+            }catch(e){console.error(e);}
+        }
+
+        function closeChat(){
+            document.getElementById('chatPanel').classList.remove('active');
+            currentConvId=null;
+        }
+
+        function formatTime(d){
+            if(!d)return'';
+            const date=new Date(d);
+            const now=new Date();
+            const diff=Math.floor((now-date)/(1000*60));
+            if(diff<1)return'À l\'instant';
+            if(diff<60)return`${diff}min`;
+            if(diff<1440)return date.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+            return date.toLocaleDateString('fr-FR',{day:'numeric',month:'short'});
+        }
+
+        document.addEventListener('DOMContentLoaded',init);
+        setInterval(()=>{if(currentConvId)openConversation(currentConvId);},10000);
+    </script>
+</body>
+</html>
