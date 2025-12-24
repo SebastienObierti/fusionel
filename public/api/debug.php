@@ -1,159 +1,132 @@
 <?php
 /**
- * FUSIONEL - Debug & Test
- * 
- * Accédez à: https://fusionel.fr/api/debug.php
- * 
- * ⚠️ SUPPRIMEZ CE FICHIER EN PRODUCTION !
+ * DEBUG - API Admin Fusionel
+ * Accès: https://fusionel.fr/api/debug.php
  */
 
-header('Content-Type: application/json; charset=utf-8');
 error_reporting(E_ALL);
+ini_set('display_errors', 1);
 
-$debug = [
-    'php_version' => PHP_VERSION,
-    'timestamp' => date('Y-m-d H:i:s'),
-    'tests' => []
+header('Content-Type: text/html; charset=utf-8');
+
+echo "<h1>🔍 Debug API Admin - Fusionel</h1>";
+echo "<style>body{font-family:Arial,sans-serif;padding:20px;max-width:900px;margin:auto}
+.ok{color:green;font-weight:bold}.error{color:red;font-weight:bold}
+pre{background:#f5f5f5;padding:15px;border-radius:8px;overflow:auto}
+.section{background:#fff;border:1px solid #ddd;padding:20px;margin:20px 0;border-radius:10px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}</style>";
+
+// 1. Informations PHP
+echo "<div class='section'>";
+echo "<h2>1️⃣ Informations PHP</h2>";
+echo "<p>Version PHP: <strong>" . phpversion() . "</strong></p>";
+echo "<p>Chemin actuel (__DIR__): <code>" . __DIR__ . "</code></p>";
+echo "</div>";
+
+// 2. Recherche du fichier config
+echo "<div class='section'>";
+echo "<h2>2️⃣ Recherche fichier database.php</h2>";
+
+$possiblePaths = [
+    __DIR__ . '/../../config/database.php',
+    __DIR__ . '/../config/database.php',
+    '/srv/web/fusionel/config/database.php',
 ];
 
-// Test 1: Config file
-$configPath = __DIR__ . '/../../config/database.php';
-$debug['tests']['config_file'] = [
-    'path' => $configPath,
-    'exists' => file_exists($configPath)
-];
+$configFound = false;
+$configPath = null;
 
-if (!file_exists($configPath)) {
-    $debug['error'] = 'Config file not found';
-    echo json_encode($debug, JSON_PRETTY_PRINT);
-    exit;
-}
-
-// Test 2: Database connection
-try {
-    $config = require $configPath;
-    $debug['tests']['config_loaded'] = [
-        'host' => $config['host'] ?? 'NOT SET',
-        'database' => $config['database'] ?? 'NOT SET',
-        'username' => $config['username'] ?? 'NOT SET',
-        'password' => isset($config['password']) ? '***SET***' : 'NOT SET'
-    ];
-    
-    $dsn = "mysql:host={$config['host']};dbname={$config['database']};charset=utf8mb4";
-    $pdo = new PDO($dsn, $config['username'], $config['password'], [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-    ]);
-    
-    $debug['tests']['database_connection'] = [
-        'status' => 'SUCCESS',
-        'server_info' => $pdo->getAttribute(PDO::ATTR_SERVER_VERSION)
-    ];
-    
-} catch (PDOException $e) {
-    $debug['tests']['database_connection'] = [
-        'status' => 'FAILED',
-        'error' => $e->getMessage()
-    ];
-    echo json_encode($debug, JSON_PRETTY_PRINT);
-    exit;
-}
-
-// Test 3: Tables existence
-$tables = ['users', 'photos', 'likes', 'matches', 'messages', 'subscriptions', 'payments'];
-$debug['tests']['tables'] = [];
-
-foreach ($tables as $table) {
-    try {
-        $count = $pdo->query("SELECT COUNT(*) FROM $table")->fetchColumn();
-        $debug['tests']['tables'][$table] = [
-            'exists' => true,
-            'row_count' => (int)$count
-        ];
-    } catch (PDOException $e) {
-        $debug['tests']['tables'][$table] = [
-            'exists' => false,
-            'error' => $e->getMessage()
-        ];
+foreach ($possiblePaths as $path) {
+    $exists = file_exists($path);
+    $realPath = $exists ? realpath($path) : 'N/A';
+    $status = $exists ? "<span class='ok'>✅ TROUVÉ</span>" : "<span class='error'>❌ Non trouvé</span>";
+    echo "<p>$status - <code>$path</code></p>";
+    if ($exists && !$configFound) {
+        $configFound = true;
+        $configPath = $path;
     }
 }
+echo "</div>";
 
-// Test 4: Users table structure
-try {
-    $columns = $pdo->query("SHOW COLUMNS FROM users")->fetchAll(PDO::FETCH_COLUMN);
-    $debug['tests']['users_columns'] = $columns;
-} catch (PDOException $e) {
-    $debug['tests']['users_columns'] = ['error' => $e->getMessage()];
+// 3. Chargement du fichier config
+echo "<div class='section'>";
+echo "<h2>3️⃣ Chargement du fichier config</h2>";
+
+if ($configFound) {
+    try {
+        require_once $configPath;
+        echo "<p class='ok'>✅ Fichier config chargé</p>";
+        echo "<p>DB_HOST: " . (defined('DB_HOST') ? DB_HOST : "Non défini") . "</p>";
+        echo "<p>DB_NAME: " . (defined('DB_NAME') ? DB_NAME : "Non défini") . "</p>";
+        echo "<p>DB_USER: " . (defined('DB_USER') ? DB_USER : "Non défini") . "</p>";
+        echo "<p>Fonction db(): " . (function_exists('db') ? "<span class='ok'>✅ Existe</span>" : "<span class='error'>❌ N'existe pas</span>") . "</p>";
+    } catch (Exception $e) {
+        echo "<p class='error'>❌ Erreur: " . $e->getMessage() . "</p>";
+    } catch (Error $e) {
+        echo "<p class='error'>❌ Erreur fatale: " . $e->getMessage() . "</p>";
+    }
+} else {
+    echo "<p class='error'>❌ Aucun fichier config trouvé!</p>";
 }
+echo "</div>";
 
-// Test 5: Recent users
-try {
-    $stmt = $pdo->query("SELECT id, firstname, email, created_at, subscription_type FROM users ORDER BY id DESC LIMIT 5");
-    $users = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    $debug['tests']['recent_users'] = $users;
-} catch (PDOException $e) {
-    $debug['tests']['recent_users'] = ['error' => $e->getMessage()];
+// 4. Test connexion BDD
+echo "<div class='section'>";
+echo "<h2>4️⃣ Test connexion BDD</h2>";
+
+$pdo = null;
+if (function_exists('db')) {
+    try {
+        $pdo = db();
+        echo "<p class='ok'>✅ Connexion PDO réussie!</p>";
+    } catch (Exception $e) {
+        echo "<p class='error'>❌ Erreur: " . $e->getMessage() . "</p>";
+    }
+} else {
+    echo "<p class='error'>❌ Fonction db() non disponible</p>";
 }
+echo "</div>";
 
-// Test 6: Test INSERT (dry run)
-try {
-    $testEmail = 'test_' . time() . '@test.com';
-    $stmt = $pdo->prepare("
-        INSERT INTO users (firstname, email, password, gender, seeking, birthdate, created_at)
-        VALUES (?, ?, ?, ?, ?, ?, NOW())
-    ");
-    
-    // Start transaction (we'll rollback)
-    $pdo->beginTransaction();
-    
-    $result = $stmt->execute([
-        'TestUser',
-        $testEmail,
-        password_hash('test123', PASSWORD_DEFAULT),
-        'male',
-        'female',
-        '1990-01-01'
-    ]);
-    
-    $insertId = $pdo->lastInsertId();
-    
-    // Rollback - don't actually insert
-    $pdo->rollBack();
-    
-    $debug['tests']['insert_test'] = [
-        'status' => 'SUCCESS',
-        'message' => "INSERT would work (rolled back)",
-        'would_be_id' => $insertId
-    ];
-    
-} catch (PDOException $e) {
-    if ($pdo->inTransaction()) $pdo->rollBack();
-    $debug['tests']['insert_test'] = [
-        'status' => 'FAILED',
-        'error' => $e->getMessage(),
-        'sql_state' => $e->getCode()
-    ];
+// 5. Test tables
+echo "<div class='section'>";
+echo "<h2>5️⃣ Test tables</h2>";
+
+if ($pdo) {
+    $tables = ['users', 'user_photos', 'matches', 'likes', 'admin_users'];
+    echo "<table border='1' cellpadding='8' style='border-collapse:collapse'>";
+    echo "<tr><th>Table</th><th>Status</th><th>Lignes</th></tr>";
+    foreach ($tables as $table) {
+        try {
+            $count = $pdo->query("SELECT COUNT(*) FROM $table")->fetchColumn();
+            echo "<tr><td>$table</td><td class='ok'>✅</td><td>$count</td></tr>";
+        } catch (Exception $e) {
+            echo "<tr><td>$table</td><td class='error'>❌</td><td>-</td></tr>";
+        }
+    }
+    echo "</table>";
 }
+echo "</div>";
 
-// Test 7: Check API endpoint
-$debug['tests']['api_check'] = [
-    'register_endpoint' => file_exists(__DIR__ . '/index.php') ? 'EXISTS' : 'NOT FOUND',
-    'admin_endpoint' => file_exists(__DIR__ . '/admin.php') ? 'EXISTS' : 'NOT FOUND'
-];
+// 6. Test Stats JSON
+echo "<div class='section'>";
+echo "<h2>6️⃣ Test Stats (ce que l'API doit retourner)</h2>";
 
-// Test 8: Session
-session_start();
-$debug['tests']['session'] = [
-    'id' => session_id(),
-    'status' => session_status(),
-    'save_path' => session_save_path()
-];
+if ($pdo) {
+    try {
+        $stats = [];
+        $stats['total_users'] = (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+        $stats['premium_users'] = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE subscription_type='premium'")->fetchColumn();
+        $stats['vip_users'] = (int)$pdo->query("SELECT COUNT(*) FROM users WHERE subscription_type='vip'")->fetchColumn();
+        echo "<p class='ok'>✅ Requêtes OK!</p>";
+        echo "<pre>" . json_encode($stats, JSON_PRETTY_PRINT) . "</pre>";
+    } catch (Exception $e) {
+        echo "<p class='error'>❌ Erreur: " . $e->getMessage() . "</p>";
+    }
+}
+echo "</div>";
 
-// Summary
-$debug['summary'] = [
-    'database' => $debug['tests']['database_connection']['status'] === 'SUCCESS' ? '✅ OK' : '❌ FAILED',
-    'users_table' => isset($debug['tests']['tables']['users']['exists']) && $debug['tests']['tables']['users']['exists'] ? '✅ OK' : '❌ MISSING',
-    'users_count' => $debug['tests']['tables']['users']['row_count'] ?? 0,
-    'insert_works' => $debug['tests']['insert_test']['status'] === 'SUCCESS' ? '✅ OK' : '❌ FAILED'
-];
-
-echo json_encode($debug, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+// Résumé
+echo "<div class='section' style='background:#fffde7'>";
+echo "<h2>📋 Actions</h2>";
+echo "<p>Si tout est vert ici, testez: <a href='/api/admin.php?route=stats'>/api/admin.php?route=stats</a></p>";
+echo "<p style='color:red'>⚠️ SUPPRIMEZ ce fichier après debug!</p>";
+echo "</div>";
