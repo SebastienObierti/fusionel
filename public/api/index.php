@@ -21,6 +21,8 @@ function error($message, $status = 400) { respond(['success' => false, 'error' =
 $configPath = dirname(dirname(__DIR__)) . '/config/database.php';
 if (!file_exists($configPath)) error('Config introuvable', 500);
 require_once $configPath;
+// Email Service
+require_once dirname(dirname(__DIR__)) . '/config/EmailService.php';
 
 try { $pdo = db(); } catch (Exception $e) { error('Erreur BDD', 500); }
 
@@ -48,6 +50,15 @@ try {
                 case 'register':
                     if ($method !== 'POST') error('Méthode non autorisée', 405);
                     $errors = [];
+                    // Convertir les genres anglais en français
+                    $genderMap = ['male' => 'homme', 'female' => 'femme', 'other' => 'autre'];
+                    if (!empty($input['gender']) && isset($genderMap[$input['gender']])) {
+                        $input['gender'] = $genderMap[$input['gender']];
+                    }
+                    $seekingMap = ['male' => 'homme', 'female' => 'femme', 'both' => 'tous', 'other' => 'autre'];
+                    if (!empty($input['seeking']) && isset($seekingMap[$input['seeking']])) {
+                        $input['seeking'] = $seekingMap[$input['seeking']];
+                    }
                     if (empty($input['firstname'])) $errors['firstname'] = 'Prénom requis';
                     if (empty($input['email'])) $errors['email'] = 'Email requis';
                     elseif (!filter_var($input['email'], FILTER_VALIDATE_EMAIL)) $errors['email'] = 'Email invalide';
@@ -55,19 +66,52 @@ try {
                     elseif (strlen($input['password']) < 8) $errors['password'] = 'Minimum 8 caractères';
                     if (empty($input['gender'])) $errors['gender'] = 'Genre requis';
                     if (empty($input['seeking'])) $errors['seeking'] = 'Préférence requise';
-                    $age = isset($input['age']) ? (int)$input['age'] : 0;
+                    
+                    // Calcul de l'âge depuis birthdate ou age
+                    $age = 0;
+                    $birthdate = null;
+                    if (!empty($input['birthdate'])) {
+                        $birthdate = $input['birthdate'];
+                        $bd = new DateTime($input['birthdate']);
+                        $today = new DateTime();
+                        $age = $today->diff($bd)->y;
+                    } elseif (isset($input['age']) && $input['age'] >= 18) {
+                        $age = (int)$input['age'];
+                        $birthdate = date('Y-m-d', strtotime("-{$age} years"));
+                    }
                     if ($age < 18) $errors['age'] = '18 ans minimum';
+                    
                     if (empty($errors['email'])) {
                         $stmt = $pdo->prepare("SELECT id FROM users WHERE email = ?");
                         $stmt->execute([strtolower(trim($input['email']))]);
                         if ($stmt->fetch()) $errors['email'] = 'Email déjà utilisé';
                     }
                     if (!empty($errors)) respond(['success' => false, 'errors' => $errors], 400);
-                    $birthdate = date('Y-m-d', strtotime("-{$age} years"));
+                    
+                    $city = $input['city'] ?? 'Non renseigné';
+                    
                     $stmt = $pdo->prepare("INSERT INTO users (firstname, email, password, gender, seeking, birthdate, city) VALUES (?, ?, ?, ?, ?, ?, ?)");
-                    $stmt->execute([trim($input['firstname']), strtolower(trim($input['email'])), password_hash($input['password'], PASSWORD_DEFAULT), $input['gender'], $input['seeking'], $birthdate, $input['city'] ?? 'Non renseigné']);
+                    $stmt->execute([
+                        trim($input['firstname']),
+                        strtolower(trim($input['email'])),
+                        password_hash($input['password'], PASSWORD_DEFAULT),
+                        $input['gender'],
+                        $input['seeking'],
+                        $birthdate,
+                        $city
+                    ]);
                     $userId = $pdo->lastInsertId();
+                    // Envoyer email de vérification
+                    try {
+                        $verificationToken = bin2hex(random_bytes(32));
+                        $pdo->prepare("UPDATE users SET email_verification_token = ? WHERE id = ?")->execute([$verificationToken, $userId]);
+                        sendVerificationEmail($input['email'], $input['firstname'], $verificationToken);
+                    } catch (Exception $e) {
+                        error_log("Email error: " . $e->getMessage());
+                    }
+                    
                     try { $pdo->prepare("INSERT INTO user_preferences (user_id) VALUES (?)")->execute([$userId]); } catch (Exception $e) {}
+                    
                     $_SESSION['user_id'] = $userId;
                     $stmt = $pdo->prepare("SELECT id, firstname, email, gender, city, subscription_type FROM users WHERE id = ?");
                     $stmt->execute([$userId]);
